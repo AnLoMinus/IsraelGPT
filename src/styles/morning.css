@@ -1,0 +1,10 @@
+/* Morning Theme */
+.theme-morning {
+  --bg-gradient-from: #a1c4fd;
+  --bg-gradient-to: #c2e9fb;
+  --text-primary: #1e3a8a;
+  --text-secondary: #3b82f6;
+  --accent-color: #fbbf24;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --border-color: rgba(191, 219, 254, 0.5);
+}

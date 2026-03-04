@@ -1,0 +1,10 @@
+/* Evening Theme */
+.theme-evening {
+  --bg-gradient-from: #4c51bf;
+  --bg-gradient-to: #6b46c1;
+  --text-primary: #e0e7ff;
+  --text-secondary: #c7d2fe;
+  --accent-color: #f59e0b;
+  --card-bg: rgba(49, 46, 129, 0.5);
+  --border-color: rgba(99, 102, 241, 0.5);
+}

@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: 'Rubik', sans-serif;
+  background-color: #f4f7fb;
+  direction: rtl;
+}
+
+.dark body {
+  background-color: #0f172a;
+}
+
+/* Markdown Styles */
+.markdown-body h1 {
+  @apply text-2xl font-bold text-blue-900 dark:text-blue-300 mb-6 pb-2 border-b border-blue-100 dark:border-slate-800;
+}
+.markdown-body h2 {
+  @apply text-xl font-bold text-blue-800 dark:text-blue-400 mt-8 mb-4 flex items-center gap-2;
+}
+.markdown-body h2::before {
+  content: '';
+  @apply block w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400;
+}
+.markdown-body p {
+  @apply text-slate-700 dark:text-slate-300 mb-4 leading-relaxed font-medium;
+}
+.markdown-body ul {
+  @apply list-none mb-6 space-y-3 text-slate-700 dark:text-slate-300;
+}
+.markdown-body li {
+  @apply relative pr-5;
+}
+.markdown-body li::before {
+  content: '•';
+  @apply absolute right-0 text-blue-400 dark:text-blue-500 font-bold;
+}
+.markdown-body li strong {
+  @apply text-blue-900 dark:text-blue-200 font-bold;
+}
+
+/* Custom scrollbar for a cleaner look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
