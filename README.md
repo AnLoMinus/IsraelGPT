@@ -3,6 +3,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/AnLoMinus/israel-gpt-assets/main/israel-gpt-banner.png" alt="IsraelGPT Banner">
   <img width="1440" height="848" alt="image" src="https://github.com/user-attachments/assets/b58cd11e-9313-4dce-b235-0c70a91b8b24" />
+<img width="1440" height="850" alt="image" src="https://github.com/user-attachments/assets/3e139687-d320-4fa8-89cd-216e0c5f2974" />
 
 </p>
 
