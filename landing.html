@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IsraelGPT - שיחות עם חכמי ישראל</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rubik', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .glass-dark {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-200/30 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-indigo-200/30 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-blue-100/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🕍</span>
+                    <span class="text-xl font-bold text-blue-900">IsraelGPT</span>
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-slate-600 hover:text-blue-600 transition-colors">תכונות</a>
+                    <a href="#characters" class="text-slate-600 hover:text-blue-600 transition-colors">דמויות</a>
+                    <a href="#about" class="text-slate-600 hover:text-blue-600 transition-colors">אודות</a>
+                    <a href="https://ais-pre-zvmqkvbcudjkecqanqsqqr-55874356172.europe-west2.run.app" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-medium transition-all shadow-lg shadow-blue-600/20">
+                        התחל שיחה
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="inline-block mb-4 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-medium animate-fade-in">
+                ✨ גרסה 0.8.8 זמינה כעת
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight animate-fade-in" style="animation-delay: 0.1s;">
+                החוכמה היהודית העתיקה<br/>
+                <span class="gradient-text">פוגשת את הבינה המלאכותית</span>
+            </h1>
+            <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in" style="animation-delay: 0.2s;">
+                נהלו שיחות מרתקות עם גדולי האומה, צרו דיונים בבית המדרש הווירטואלי,
+                וגלו את העושר של ההיסטוריה היהודית באמצעות טכנולוגיית AI מתקדמת.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style="animation-delay: 0.3s;">
+                <a href="https://ais-pre-zvmqkvbcudjkecqanqsqqr-55874356172.europe-west2.run.app" class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-600/20 hover:transform hover:-translate-y-1 transition-all">
+                    נסו את IsraelGPT בחינם ←
+                </a>
+                <a href="https://github.com/AnLoMinus/israel-gpt" class="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-20 bg-white/50">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-16">מה אפשר לעשות ב-IsraelGPT?</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="glass p-8 rounded-3xl hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl mb-6">🗣️</div>
+                    <h3 class="text-xl font-bold mb-3">שיחות אישיות</h3>
+                    <p class="text-slate-600">דברו עם דמויות מפתח מההיסטוריה היהודית. כל דמות בעלת אופי ייחודי, ידע היסטורי וסגנון דיבור אותנטי.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="glass p-8 rounded-3xl hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-2xl mb-6">🏛️</div>
+                    <h3 class="text-xl font-bold mb-3">בית מדרש</h3>
+                    <p class="text-slate-600">צרו פאנל של עד 4 דמויות לדיון משותף. צפו בהן מתווכחות, מסכימות ומפרות זו את זו.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="glass p-8 rounded-3xl hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-2xl mb-6">📅</div>
+                    <h3 class="text-xl font-bold mb-3">לוח שנה וזמנים</h3>
+                    <p class="text-slate-600">התעדכנו בתאריך העברי, זמני היום, פרשת השבוע והדף היומי - הכל במקום אחד.</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="glass p-8 rounded-3xl hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl mb-6">🎨</div>
+                    <h3 class="text-xl font-bold mb-3">יצירת תמונות</h3>
+                    <p class="text-slate-600">בקשו מהדמויות לצייר עבורכם. המערכת משתמשת במודלים מתקדמים ליצירת אמנות יהודית.</p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="glass p-8 rounded-3xl hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-2xl mb-6">🎤</div>
+                    <h3 class="text-xl font-bold mb-3">קול ודיבור</h3>
+                    <p class="text-slate-600">תמיכה מלאה בדיבור (Voice-to-Text) והקראה (Text-to-Speech) לשיחה טבעית וקולחת.</p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="glass p-8 rounded-3xl hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-2xl mb-6">📚</div>
+                    <h3 class="text-xl font-bold mb-3">מקורות מדויקים</h3>
+                    <p class="text-slate-600">התשובות מלוות במראי מקום מדויקים מהמקורות - פסוקים, גמרא, שולחן ערוך ועוד.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <span class="text-2xl">🕍</span>
+                <span class="text-xl font-bold text-slate-900">IsraelGPT</span>
+            </div>
+            <p class="text-slate-500 mb-8">נבנה באהבה עם React, TypeScript ו-Gemini AI.</p>
+            <div class="flex justify-center gap-6 text-sm text-slate-400">
+                <a href="#" class="hover:text-blue-600">תנאי שימוש</a>
+                <a href="#" class="hover:text-blue-600">מדיניות פרטיות</a>
+                <a href="https://github.com/AnLoMinus/israel-gpt" class="hover:text-blue-600">GitHub</a>
+            </div>
+            <div class="mt-8 text-xs text-slate-300">
+                © 2026 IsraelGPT. כל הזכויות שמורות.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
