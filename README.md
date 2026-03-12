@@ -148,8 +148,8 @@ IsraelGPT הוא פרויקט חדשני המשלב את היכולות המתק
 
 1.  **שכפל את המאגר (Repository):**
     ```bash
-    git clone <repository-url>
-    cd israel-gpt
+    git clone https://github.com/AnLoMinus/IsraelGPT
+    cd IsraelGPT
     ```
 
 2.  **התקן תלויות:**
