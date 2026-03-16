@@ -1,8 +1,16 @@
 # IsraelGPT - צ'אט בינה מלאכותית עם חכמי ישראל
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/AnLoMinus/israel-gpt-assets/main/israel-gpt-banner.png" alt="IsraelGPT Banner">
+  <img src="https://github.com/user-attachments/assets/fe49b5bb-019c-4197-b6fb-0c27c5bb0b7d" alt="logo" width="400" />
 </p>
+
+## 📸 גלריית תמונות
+
+| | | |
+| :---: | :---: | :---: |
+| ![image](https://github.com/user-attachments/assets/eae82823-af5c-4a79-a68a-d88bddaf5f06) | ![image (4)](https://github.com/user-attachments/assets/51ea0837-28d0-44c4-9643-41ce6e9d208a) | ![image (3)](https://github.com/user-attachments/assets/733de895-2dce-4242-b15f-a196fe53f8c4) |
+| ![image (2)](https://github.com/user-attachments/assets/5bdf7c80-ec8d-4ed9-9cd6-1d748cbe4e7b) | ![image (1)](https://github.com/user-attachments/assets/9a045d9b-3d8c-4905-86c3-1aa511d499b8) | ![Gemini_Generated_Image_xoh8pdxoh8pdxoh8](https://github.com/user-attachments/assets/12fb3b8c-929a-4a9f-bb6a-cead630a1422) |
+| ![Gemini_Generated_Image_u41prbu41prbu41p](https://github.com/user-attachments/assets/afda7b41-0cb2-42aa-8f13-65b8bab184ed) | ![Gemini_Generated_Image_nn2fcvnn2fcvnn2f](https://github.com/user-attachments/assets/afffcd4b-950a-41ef-af0b-1fcca46490c5) | ![Gemini_Generated_Image_h3jou4h3jou4h3jo](https://github.com/user-attachments/assets/94ea2dbd-0d72-4399-9428-900d8bde48e8) |
 
 <p align="center">
   <strong>שיחות חכמות עם גדולי האומה.</strong>
@@ -74,7 +82,7 @@ IsraelGPT הוא פרויקט חדשני המשלב את היכולות המתק
 
 1.  **Interfaces (ממשקים):**
     *   `Message`: מגדיר את מבנה ההודעה בצ'אט (id, role, text, sageId, וכו').
-    *   `ChatSession`: מגדיр את מבנה סשן שיחה בהיסטוריה.
+    *   `ChatSession`: מגדיר את מבנה סשן שיחה בהיסטוריה.
 
 2.  **State Management (ניהול מצב):**
     *   `useState` משמש לניהול כל המצבים של האפליקציה: `isDarkMode`, `isSidebarOpen`, `messages`, `sessions`, `activeSages`, `isLoading` ועוד.
@@ -138,6 +146,8 @@ IsraelGPT הוא פרויקט חדשני המשלב את היכולות המתק
 *   **v0.7.0:** הוספת Streaming, יצירת תמונות וייצוא מתקדם.
 *   **v0.6.0:** הוספת תמיכה קולית (VTT/TTS) ושיתוף/הורדת שיחות.
 *   **v0.5.0:** הוספת היסטוריית שיחות, יצירת דמויות אישיות ומצב כהה.
+*   **v0.4.2:** שדרוג הסידור לחלון מודל במסך מלא.
+*   **v0.4.1:** עדכון תפילות ללשון רבים והוספת הסברים.
 *   **v0.4.0:** חיבור ראשוני ל-Gemini API והרחבת מאגר הדמויות.
 *   **v0.3.0:** עיצוב מחדש של הממשק ותמיכה מלאה בעברית.
 
@@ -145,8 +155,8 @@ IsraelGPT הוא פרויקט חדשני המשלב את היכולות המתק
 
 1.  **שכפל את המאגר (Repository):**
     ```bash
-    git clone <repository-url>
-    cd israel-gpt
+    git clone https://github.com/AnLoMinus/IsraelGPT
+    cd IsraelGPT
     ```
 
 2.  **התקן תלויות:**
@@ -175,4 +185,3 @@ IsraelGPT הוא פרויקט חדשני המשלב את היכולות המתק
 <p align="center">
   תודה על השימוש ב-IsraelGPT!
 </p>
-
