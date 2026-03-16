@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Menu, Plus, MessageSquare, Settings, User, 
+  Menu, Plus, MessageSquare, Settings as SettingsIcon, User, 
   Send, Paperclip, Mic, Sparkles, ChevronDown,
   Globe, Shield, Zap, Copy, ThumbsUp, ThumbsDown, RefreshCw,
   History, X, BookOpen, Loader2, Moon, Sun, Trash2,
   Volume2, Download, Share2, FileText, Info, FileCheck, ShieldCheck, Scale,
-  Heart, Scroll, Users
+  Heart, Scroll, Users, LogIn, LogOut
 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { GoogleGenAI, Type } from '@google/genai';
@@ -15,8 +15,13 @@ import { HDate, Sedra, Locale } from '@hebcal/core';
 import { characters as defaultCharacters, Character } from './characters';
 import { TermsOfUse } from './components/TermsOfUse';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
+import { Settings } from './components/Settings';
 import { ParashatHashavua } from './components/ParashatHashavua';
 import { DafYomi } from './components/DafYomi';
+import { Siddur } from './components/Siddur/Siddur';
+import { auth, db } from './firebase';
+import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { collection, doc, getDoc, setDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const StarOfDavid = ({ className = "w-6 h-6", style }: { className?: string, style?: React.CSSProperties }) => (
   <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -160,8 +165,10 @@ export default function App() {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isParashaOpen, setIsParashaOpen] = useState(false);
   const [isDafYomiOpen, setIsDafYomiOpen] = useState(false);
+  const [isSiddurOpen, setIsSiddurOpen] = useState(false);
   
   const [customCharacters, setCustomCharacters] = useState<Character[]>([]);
   const [isAddCharOpen, setIsAddCharOpen] = useState(false);
@@ -175,6 +182,7 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
   const [dateTimeInfo, setDateTimeInfo] = useState({
     gregorian: '',
@@ -267,12 +275,36 @@ export default function App() {
 
   // Initialize or reset chat
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     // Only reset messages if we are not loading an existing session
     if (!currentSessionId) {
       setMessages([]);
       setChatStarted(false);
     }
   }, [activeSages, currentSessionId]);
+
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error('Login failed', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
+  };
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -544,6 +576,16 @@ export default function App() {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'he-IL';
+      
+      // Try to find a more natural sounding Hebrew voice
+      const voices = window.speechSynthesis.getVoices();
+      const hebrewVoice = voices.find(v => v.lang === 'he-IL' && v.name.includes('Google'));
+      if (hebrewVoice) {
+        utterance.voice = hebrewVoice;
+      }
+      
+      utterance.rate = 0.95; // Slightly slower for better clarity
+      utterance.pitch = 1.0;
       window.speechSynthesis.speak(utterance);
     } else {
       alert('הדפדפן שלך לא תומך בהקראת טקסט.');
@@ -669,6 +711,15 @@ export default function App() {
                   </div>
                   <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-l from-blue-500 to-cyan-400">IsraelGPT</span>
                 </div>
+                {user ? (
+                  <button onClick={handleLogout} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-blue-50 text-blue-500'}`} title="התנתק">
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                ) : (
+                  <button onClick={handleGoogleLogin} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-blue-50 text-blue-500'}`} title="התחבר">
+                    <LogIn className="w-5 h-5" />
+                  </button>
+                )}
               </div>
 
               {/* Mobile/Sidebar Date Info */}
@@ -906,6 +957,13 @@ export default function App() {
               className={`p-2 rounded-xl transition-all border border-transparent ${isDarkMode ? 'hover:bg-slate-800 hover:border-slate-700 text-yellow-400' : 'hover:bg-white/80 hover:shadow-sm hover:border-blue-100 text-slate-600'}`}
             >
               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button 
+              onClick={() => setIsSiddurOpen(true)}
+              className={`flex items-center gap-2 text-sm font-semibold px-4 py-1.5 rounded-full transition-all border ${isDarkMode ? 'text-blue-400 bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'text-blue-700 bg-white/80 backdrop-blur-md border-blue-200/80 hover:bg-blue-50 hover:shadow-[0_2px_10px_rgba(37,99,235,0.1)]'}`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="hidden sm:inline">סידור קול הרבים</span>
             </button>
             <button 
               onClick={() => setIsParashaOpen(true)}
@@ -1286,6 +1344,23 @@ export default function App() {
               <div className={`p-4 border-t text-center text-xs ${isDarkMode ? 'border-slate-800 text-slate-500' : 'border-blue-100/50 text-slate-400'}`}>
                 Made with ❤️ in Israel
               </div>
+              
+              {/* User Profile Footer */}
+              {user && (
+                <div className={`p-4 border-t flex items-center justify-between ${isDarkMode ? 'border-slate-800 bg-slate-900/50' : 'border-blue-100/50 bg-white/50'}`}>
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      {user.displayName?.[0] || user.email?.[0] || 'U'}
+                    </div>
+                    <span className={`text-sm truncate ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                      {user.displayName || user.email}
+                    </span>
+                  </div>
+                  <button onClick={() => setIsSettingsOpen(true)} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-blue-50 text-blue-500'}`} title="הגדרות">
+                    <SettingsIcon className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
             </motion.div>
           </div>
         )}
@@ -1308,6 +1383,14 @@ export default function App() {
           isDarkMode={isDarkMode} 
         />
       </AnimatePresence>
+
+      {/* Settings Modal */}
+      <Settings 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+        isDarkMode={isDarkMode} 
+        user={user}
+      />
 
       {/* Add Character Modal */}
       <AnimatePresence>
@@ -1407,6 +1490,12 @@ export default function App() {
           </div>
         )}
       </AnimatePresence>
+
+      <Siddur 
+        isOpen={isSiddurOpen} 
+        onClose={() => setIsSiddurOpen(false)} 
+        isDarkMode={isDarkMode} 
+      />
 
       <AnimatePresence>
         <ParashatHashavua 

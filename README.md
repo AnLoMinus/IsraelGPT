@@ -1,22 +1,7 @@
 # IsraelGPT - צ'אט בינה מלאכותית עם חכמי ישראל
-<img width="1008" height="1056" alt="logo" src="https://github.com/user-attachments/assets/fe49b5bb-019c-4197-b6fb-0c27c5bb0b7d" />
-![image](https://github.com/user-attachments/assets/eae82823-af5c-4a79-a68a-d88bddaf5f06)
-![image (4)](https://github.com/user-attachments/assets/51ea0837-28d0-44c4-9643-41ce6e9d208a)
-![image (3)](https://github.com/user-attachments/assets/733de895-2dce-4242-b15f-a196fe53f8c4)
-![image (2)](https://github.com/user-attachments/assets/5bdf7c80-ec8d-4ed9-9cd6-1d748cbe4e7b)
-![image (1)](https://github.com/user-attachments/assets/9a045d9b-3d8c-4905-86c3-1aa511d499b8)
-<img width="1008" height="1056" alt="Gemini_Generated_Image_xoh8pdxoh8pdxoh8" src="https://github.com/user-attachments/assets/12fb3b8c-929a-4a9f-bb6a-cead630a1422" />
-<img width="1008" height="1056" alt="Gemini_Generated_Image_u41prbu41prbu41p" src="https://github.com/user-attachments/assets/afda7b41-0cb2-42aa-8f13-65b8bab184ed" />
-<img width="1408" height="768" alt="Gemini_Generated_Image_nn2fcvnn2fcvnn2f" src="https://github.com/user-attachments/assets/afffcd4b-950a-41ef-af0b-1fcca46490c5" />
-<img width="1008" height="1056" alt="Gemini_Generated_Image_h3jou4h3jou4h3jo" src="https://github.com/user-attachments/assets/94ea2dbd-0d72-4399-9428-900d8bde48e8" />
-<img width="1008" height="1056" alt="Gemini_Generated_Image_fadsfgfadsfgfads" src="https://github.com/user-attachments/assets/db8705d9-67e6-42c8-acd3-d4d9d8206c4e" />
-<img width="1008" height="1056" alt="Gemini_Generated_Image_71udrq71udrq71ud" src="https://github.com/user-attachments/assets/c903e2f7-95a5-458a-bd10-2788f3b31547" />
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/AnLoMinus/israel-gpt-assets/main/israel-gpt-banner.png" alt="IsraelGPT Banner">
-  <img width="1440" height="848" alt="image" src="https://github.com/user-attachments/assets/b58cd11e-9313-4dce-b235-0c70a91b8b24" />
-<img width="1440" height="850" alt="image" src="https://github.com/user-attachments/assets/3e139687-d320-4fa8-89cd-216e0c5f2974" />
-
 </p>
 
 <p align="center">
@@ -160,8 +145,8 @@ IsraelGPT הוא פרויקט חדשני המשלב את היכולות המתק
 
 1.  **שכפל את המאגר (Repository):**
     ```bash
-    git clone https://github.com/AnLoMinus/IsraelGPT
-    cd IsraelGPT
+    git clone <repository-url>
+    cd israel-gpt
     ```
 
 2.  **התקן תלויות:**
