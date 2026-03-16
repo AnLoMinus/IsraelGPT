@@ -917,7 +917,7 @@ export default function App() {
               title="צפה ביומן אירועים (Changelog)"
             >
               <span className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-slate-200 group-hover:text-white' : 'text-blue-900 group-hover:text-blue-700'}`}>IsraelGPT</span>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.8.8</span>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.9.0</span>
               <Sparkles className="w-3.5 h-3.5 text-blue-500" />
             </div>
             

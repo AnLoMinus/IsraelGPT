@@ -18,7 +18,7 @@ interface SiddurProps {
   isDarkMode: boolean;
 }
 
-const SIDDUR_VERSION = "0.4.2";
+const SIDDUR_VERSION = "0.8.8";
 
 const SIDDUR_TOC = [
   {
