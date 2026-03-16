@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Menu, Plus, MessageSquare, Settings as SettingsIcon, User, 
+  Menu, Plus, MessageSquare, SettingsIcon as SettingsLucide, User, 
   Send, Paperclip, Mic, Sparkles, ChevronDown,
   Globe, Shield, Zap, Copy, ThumbsUp, ThumbsDown, RefreshCw,
   History, X, BookOpen, Loader2, Moon, Sun, Trash2,
@@ -166,6 +166,7 @@ export default function App() {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isYeshivaMenuOpen, setIsYeshivaMenuOpen] = useState(false);
   const [isParashaOpen, setIsParashaOpen] = useState(false);
   const [isDafYomiOpen, setIsDafYomiOpen] = useState(false);
   const [isSiddurOpen, setIsSiddurOpen] = useState(false);
@@ -892,7 +893,7 @@ export default function App() {
                     <div className={`text-sm font-semibold ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>ישראל ישראלי</div>
                     <div className="text-xs text-blue-500 font-medium">תוכנית Pro</div>
                   </div>
-                  <Settings className={`w-4 h-4 ${isDarkMode ? 'text-slate-400' : 'text-blue-400'}`} />
+                  <SettingsLucide className={`w-4 h-4 ${isDarkMode ? 'text-slate-400' : 'text-blue-400'}`} />
                 </button>
               </div>
             </div>
@@ -917,7 +918,7 @@ export default function App() {
               title="צפה ביומן אירועים (Changelog)"
             >
               <span className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-slate-200 group-hover:text-white' : 'text-blue-900 group-hover:text-blue-700'}`}>IsraelGPT</span>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.9.0</span>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.9.1</span>
               <Sparkles className="w-3.5 h-3.5 text-blue-500" />
             </div>
             
@@ -965,20 +966,34 @@ export default function App() {
               <BookOpen className="w-4 h-4" />
               <span className="hidden sm:inline">סידור קול הרבים</span>
             </button>
-            <button 
-              onClick={() => setIsParashaOpen(true)}
-              className={`flex items-center gap-2 text-sm font-semibold px-4 py-1.5 rounded-full transition-all border ${isDarkMode ? 'text-blue-400 bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'text-blue-700 bg-white/80 backdrop-blur-md border-blue-200/80 hover:bg-blue-50 hover:shadow-[0_2px_10px_rgba(37,99,235,0.1)]'}`}
-            >
-              <Scroll className="w-4 h-4" />
-              <span className="hidden sm:inline">פרשת שבוע</span>
-            </button>
-            <button 
-              onClick={() => setIsDafYomiOpen(true)}
-              className={`flex items-center gap-2 text-sm font-semibold px-4 py-1.5 rounded-full transition-all border ${isDarkMode ? 'text-blue-400 bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'text-blue-700 bg-white/80 backdrop-blur-md border-blue-200/80 hover:bg-blue-50 hover:shadow-[0_2px_10px_rgba(37,99,235,0.1)]'}`}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span className="hidden sm:inline">תלמוד יומי</span>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setIsYeshivaMenuOpen(!isYeshivaMenuOpen)}
+                className={`flex items-center gap-2 text-sm font-semibold px-4 py-1.5 rounded-full transition-all border ${isDarkMode ? 'text-blue-400 bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'text-blue-700 bg-white/80 backdrop-blur-md border-blue-200/80 hover:bg-blue-50 hover:shadow-[0_2px_10px_rgba(37,99,235,0.1)]'}`}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">ישיבה</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              {isYeshivaMenuOpen && (
+                <div className={`absolute left-0 mt-2 w-48 rounded-xl shadow-lg border p-1 z-50 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-blue-100'}`}>
+                  <button 
+                    onClick={() => { setIsParashaOpen(true); setIsYeshivaMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg transition-all ${isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-slate-700 hover:bg-blue-50'}`}
+                  >
+                    <Scroll className="w-4 h-4" />
+                    פרשת שבוע
+                  </button>
+                  <button 
+                    onClick={() => { setIsDafYomiOpen(true); setIsYeshivaMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg transition-all ${isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-slate-700 hover:bg-blue-50'}`}
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    תלמוד יומי
+                  </button>
+                </div>
+              )}
+            </div>
             <button 
               onClick={() => setIsAboutOpen(true)}
               className={`flex items-center gap-2 text-sm font-semibold px-4 py-1.5 rounded-full transition-all border ${isDarkMode ? 'text-blue-400 bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'text-blue-700 bg-white/80 backdrop-blur-md border-blue-200/80 hover:bg-blue-50 hover:shadow-[0_2px_10px_rgba(37,99,235,0.1)]'}`}
@@ -1357,7 +1372,7 @@ export default function App() {
                     </span>
                   </div>
                   <button onClick={() => setIsSettingsOpen(true)} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-blue-50 text-blue-500'}`} title="הגדרות">
-                    <SettingsIcon className="w-5 h-5" />
+                    <SettingsLucide className="w-5 h-5" />
                   </button>
                 </div>
               )}
