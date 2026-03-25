@@ -13,6 +13,8 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { toPng } from 'html-to-image';
 import { HDate, Sedra, Locale } from '@hebcal/core';
 import { characters as defaultCharacters, Character } from './characters';
+import { getBiography } from './biographies';
+import { CharacterCV } from './components/CharacterCV';
 import { TermsOfUse } from './components/TermsOfUse';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Settings } from './components/Settings';
@@ -161,6 +163,8 @@ export default function App() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [mode, setMode] = useState<'chat' | 'chavrusa'>('chat');
   
+  const [cvCharacter, setCvCharacter] = useState<Character | null>(null);
+  
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const [changelogText, setChangelogText] = useState('');
   const [isAboutOpen, setIsAboutOpen] = useState(false);
@@ -290,6 +294,8 @@ export default function App() {
       setChatStarted(false);
     }
   }, [activeSages, currentSessionId]);
+
+
 
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
@@ -920,49 +926,66 @@ export default function App() {
                           </div>
                           <div className="space-y-2">
                             {eraChars.map((sage, i) => (
-                              <button 
+                              <div 
                                 key={sage.id} 
-                                onClick={() => {
-                                  if (mode === 'chavrusa') {
-                                    setActiveSages(prev => {
-                                      const exists = prev.find(s => s.id === sage.id);
-                                      if (exists) return prev.filter(s => s.id !== sage.id);
-                                      if (prev.length >= 15) return [...prev.slice(1), sage]; // Keep the last 14 and add the new one
-                                      return [...prev, sage];
-                                    });
-                                  } else {
-                                    setActiveSages(prev => {
-                                      const exists = prev.find(s => s.id === sage.id);
-                                      if (exists) return prev.filter(s => s.id !== sage.id);
-                                      return [...prev, sage];
-                                    });
-                                  }
-                                  if (!chatStarted) {
-                                    setCurrentSessionId(null);
-                                    setMessages([]);
-                                  }
-                                }}
-                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-right group border ${
+                                className={`w-full flex items-center gap-2 px-2 py-2 rounded-xl transition-all text-right group border relative ${
                                   activeSages.some(s => s.id === sage.id)
                                     ? (isDarkMode ? 'bg-slate-800 border-slate-700 shadow-sm' : 'bg-blue-50 border-blue-200 shadow-sm')
                                     : (isDarkMode ? 'hover:bg-slate-800/50 border-transparent hover:border-slate-700' : 'hover:bg-blue-50/80 border-transparent hover:border-blue-100/50 hover:shadow-sm')
                                 }`}
                               >
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-inner border group-hover:scale-110 transition-transform shrink-0 ${
-                                  sage.color 
-                                    ? `${sage.color} text-white border-transparent` 
-                                    : (isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gradient-to-br from-blue-100 to-blue-50 border-blue-200/50')
-                                }`}>
-                                  {sage.icon}
+                                <button
+                                  className="flex-1 flex items-center gap-3 text-right overflow-hidden"
+                                  onClick={() => {
+                                    if (mode === 'chavrusa') {
+                                      setActiveSages(prev => {
+                                        const exists = prev.find(s => s.id === sage.id);
+                                        if (exists) return prev.filter(s => s.id !== sage.id);
+                                        if (prev.length >= 15) return [...prev.slice(1), sage]; // Keep the last 14 and add the new one
+                                        return [...prev, sage];
+                                      });
+                                    } else {
+                                      setActiveSages(prev => {
+                                        const exists = prev.find(s => s.id === sage.id);
+                                        if (exists) return prev.filter(s => s.id !== sage.id);
+                                        return [...prev, sage];
+                                      });
+                                    }
+                                    if (!chatStarted) {
+                                      setCurrentSessionId(null);
+                                      setMessages([]);
+                                    }
+                                  }}
+                                >
+                                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-inner border group-hover:scale-110 transition-transform shrink-0 ${
+                                    sage.color 
+                                      ? `${sage.color} text-white border-transparent` 
+                                      : (isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gradient-to-br from-blue-100 to-blue-50 border-blue-200/50')
+                                  }`}>
+                                    {sage.icon}
+                                  </div>
+                                  <div className="flex-1 overflow-hidden">
+                                    <div className={`font-bold text-sm truncate ${isDarkMode ? 'text-slate-200' : 'text-blue-900'}`}>{sage.name}</div>
+                                    <div className={`text-xs truncate font-medium ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>{sage.description}</div>
+                                  </div>
+                                </button>
+                                
+                                <div className="flex items-center gap-1 shrink-0">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setCvCharacter(sage);
+                                    }}
+                                    className={`p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-slate-400 hover:bg-slate-700 hover:text-blue-400' : 'text-slate-400 hover:bg-blue-100 hover:text-blue-600'}`}
+                                    title="מידע על הדמות"
+                                  >
+                                    <Info className="w-4 h-4" />
+                                  </button>
+                                  {activeSages.some(s => s.id === sage.id) && (
+                                    <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0 ml-1"></div>
+                                  )}
                                 </div>
-                                <div className="flex-1 overflow-hidden">
-                                  <div className={`font-bold text-sm truncate ${isDarkMode ? 'text-slate-200' : 'text-blue-900'}`}>{sage.name}</div>
-                                  <div className={`text-xs truncate font-medium ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>{sage.description}</div>
-                                </div>
-                                {activeSages.some(s => s.id === sage.id) && (
-                                  <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
-                                )}
-                              </button>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -1006,7 +1029,7 @@ export default function App() {
               title="צפה ביומן אירועים (Changelog)"
             >
               <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-9 mx-auto" referrerPolicy="no-referrer" />
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.10.0</span>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.11.0</span>
               <Sparkles className="w-3.5 h-3.5 text-blue-500" />
             </div>
             
@@ -1314,6 +1337,17 @@ export default function App() {
             </div>
           </div>
         </div>
+
+        {/* Character CV Modal */}
+        {cvCharacter && (
+          <CharacterCV
+            character={cvCharacter}
+            biography={getBiography(cvCharacter.id)}
+            isOpen={!!cvCharacter}
+            onClose={() => setCvCharacter(null)}
+            isDarkMode={isDarkMode}
+          />
+        )}
       </main>
 
       {/* Changelog Modal */}
