@@ -141,6 +141,7 @@ interface Message {
   icon?: string;
   imageUrl?: string;
   isImageLoading?: boolean;
+  color?: string;
 }
 
 interface ChatSession {
@@ -430,7 +431,8 @@ export default function App() {
             text: '',
             sageId: sage.id,
             sageName: sage.name,
-            icon: sage.icon
+            icon: sage.icon,
+            color: sage.color
           };
           
           updatedMessages = [...updatedMessages, modelMsg];
@@ -627,6 +629,61 @@ export default function App() {
     recognition.start();
   };
 
+  const renderMarkdownContent = (msg: Message) => {
+    if (msg.sageId !== 'chavrusa' || activeSages.length === 0) {
+      return (
+        <div className={`prose prose-p:leading-relaxed max-w-none text-[15px] font-medium markdown-body ${isDarkMode ? 'prose-invert text-slate-300' : 'prose-slate text-blue-900/80'} ${msg.color ? `border-r-4 pr-4 ${msg.color.replace('bg-', 'border-').replace('from-', 'border-').split(' ')[0]}` : ''}`} dir="rtl">
+          <Markdown>{msg.text}</Markdown>
+        </div>
+      );
+    }
+
+    const sageNames = activeSages.map(s => s.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const regex = new RegExp(`(?:\\n|^)\\s*(?:\\*\\*)?(${sageNames})(?:\\*\\*)?\\s*:`, 'g');
+    const parts = msg.text.split(regex);
+
+    if (parts.length === 1) {
+      return (
+        <div className={`prose prose-p:leading-relaxed max-w-none text-[15px] font-medium markdown-body ${isDarkMode ? 'prose-invert text-slate-300' : 'prose-slate text-blue-900/80'} ${msg.color ? `border-r-4 pr-4 ${msg.color.replace('bg-', 'border-').replace('from-', 'border-').split(' ')[0]}` : ''}`} dir="rtl">
+          <Markdown>{msg.text}</Markdown>
+        </div>
+      );
+    }
+
+    const elements = [];
+    if (parts[0].trim()) {
+      elements.push(
+        <div key="intro" className={`prose prose-p:leading-relaxed max-w-none text-[15px] font-medium markdown-body mb-4 ${isDarkMode ? 'prose-invert text-slate-300' : 'prose-slate text-blue-900/80'}`} dir="rtl">
+          <Markdown>{parts[0]}</Markdown>
+        </div>
+      );
+    }
+
+    for (let i = 1; i < parts.length; i += 2) {
+      const sageName = parts[i];
+      const sageText = parts[i + 1];
+      const sage = activeSages.find(s => s.name === sageName);
+      const colorClass = sage?.color ? sage.color.replace('bg-', 'border-').replace('from-', 'border-').split(' ')[0] : 'border-blue-400';
+      const textColorClass = sage?.color ? sage.color.replace('bg-', 'text-').replace('from-', 'text-').split(' ')[0] : 'text-blue-600';
+
+      elements.push(
+        <div key={i} className={`mb-4 border-r-4 pr-4 ${colorClass} rounded-l-xl p-3 ${isDarkMode ? 'bg-slate-800/40' : 'bg-slate-50/50'}`}>
+          <div className={`font-bold text-sm mb-2 ${textColorClass} flex items-center gap-2`}>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${sage?.color || 'bg-blue-500'}`}>
+              {sage?.icon}
+            </div>
+            <span>{sageName}</span>
+          </div>
+          <div className={`prose prose-p:leading-relaxed max-w-none text-[15px] font-medium markdown-body ${isDarkMode ? 'prose-invert text-slate-300' : 'prose-slate text-blue-900/80'}`} dir="rtl">
+            <Markdown>{sageText}</Markdown>
+          </div>
+        </div>
+      );
+    }
+
+    return <>{elements}</>;
+  };
+
   const handleDownloadMD = () => {
     if (messages.length === 0) return;
     
@@ -706,11 +763,8 @@ export default function App() {
           >
             <div className="w-[280px] h-full flex flex-col">
               <div className="p-4 flex items-center justify-between">
-                <div className={`flex items-center gap-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-700'}`}>
-                  <div className={`p-2 rounded-xl shadow-sm border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200/50'}`}>
-                    <StarOfDavid className="w-6 h-6 text-blue-500" />
-                  </div>
-                  <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-l from-blue-500 to-cyan-400">IsraelGPT</span>
+                <div className="flex items-center justify-center w-full">
+                  <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-16" referrerPolicy="no-referrer" />
                 </div>
                 {user ? (
                   <button onClick={handleLogout} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-blue-50 text-blue-500'}`} title="התנתק">
@@ -825,15 +879,45 @@ export default function App() {
                     </button>
                   </div>
                   <div className="space-y-6">
-                    {['אבות האומה', 'נביאים ומנהיגים', 'תנאים', 'ראשונים', 'אחרונים', 'דמויות אישיות'].map((era) => {
+                    {['אבות האומה', '12 השבטים', 'נביאים ומנהיגים', 'תנאים', 'ראשונים', 'אחרונים', 'דמויות אישיות'].map((era) => {
                       const eraChars = allCharacters.filter(c => (c.era || 'דמויות אישיות') === era);
                       if (eraChars.length === 0) return null;
                       
+                      const isAllTribesSelected = era === '12 השבטים' && eraChars.every(tribe => activeSages.some(s => s.id === tribe.id));
+
                       return (
                         <div key={era}>
-                          <h4 className={`text-[10px] font-bold uppercase tracking-wider mb-2 px-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                            {era}
-                          </h4>
+                          <div className="flex items-center justify-between mb-2 px-2">
+                            <h4 className={`text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                              {era}
+                            </h4>
+                            {era === '12 השבטים' && (
+                              <button
+                                onClick={() => {
+                                  if (isAllTribesSelected) {
+                                    setActiveSages(prev => prev.filter(s => s.era !== '12 השבטים'));
+                                  } else {
+                                    setActiveSages(prev => {
+                                      const nonTribes = prev.filter(s => s.era !== '12 השבטים');
+                                      return [...nonTribes, ...eraChars];
+                                    });
+                                    setMode('chavrusa');
+                                  }
+                                  if (!chatStarted) {
+                                    setCurrentSessionId(null);
+                                    setMessages([]);
+                                  }
+                                }}
+                                className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+                                  isAllTribesSelected 
+                                    ? (isDarkMode ? 'bg-blue-600 border-blue-500 text-white' : 'bg-blue-500 border-blue-600 text-white')
+                                    : (isDarkMode ? 'border-slate-600 text-slate-400 hover:bg-slate-700' : 'border-blue-200 text-blue-600 hover:bg-blue-50')
+                                }`}
+                              >
+                                {isAllTribesSelected ? 'הסר הכל' : 'בחר הכל'}
+                              </button>
+                            )}
+                          </div>
                           <div className="space-y-2">
                             {eraChars.map((sage, i) => (
                               <button 
@@ -843,7 +927,7 @@ export default function App() {
                                     setActiveSages(prev => {
                                       const exists = prev.find(s => s.id === sage.id);
                                       if (exists) return prev.filter(s => s.id !== sage.id);
-                                      if (prev.length >= 4) return [...prev.slice(1), sage]; // Keep the last 3 and add the new one
+                                      if (prev.length >= 15) return [...prev.slice(1), sage]; // Keep the last 14 and add the new one
                                       return [...prev, sage];
                                     });
                                   } else {
@@ -864,7 +948,11 @@ export default function App() {
                                     : (isDarkMode ? 'hover:bg-slate-800/50 border-transparent hover:border-slate-700' : 'hover:bg-blue-50/80 border-transparent hover:border-blue-100/50 hover:shadow-sm')
                                 }`}
                               >
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-inner border group-hover:scale-110 transition-transform shrink-0 ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gradient-to-br from-blue-100 to-blue-50 border-blue-200/50'}`}>
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-inner border group-hover:scale-110 transition-transform shrink-0 ${
+                                  sage.color 
+                                    ? `${sage.color} text-white border-transparent` 
+                                    : (isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gradient-to-br from-blue-100 to-blue-50 border-blue-200/50')
+                                }`}>
                                   {sage.icon}
                                 </div>
                                 <div className="flex-1 overflow-hidden">
@@ -917,8 +1005,8 @@ export default function App() {
               className={`flex items-center gap-2 px-3 py-1.5 backdrop-blur-md rounded-xl cursor-pointer transition-colors group border ${isDarkMode ? 'bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'bg-white/80 shadow-[0_2px_10px_rgba(37,99,235,0.05)] border-blue-100/80 hover:bg-blue-50'}`}
               title="צפה ביומן אירועים (Changelog)"
             >
-              <span className={`text-sm font-bold transition-colors ${isDarkMode ? 'text-slate-200 group-hover:text-white' : 'text-blue-900 group-hover:text-blue-700'}`}>IsraelGPT</span>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.9.1</span>
+              <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-9 mx-auto" referrerPolicy="no-referrer" />
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.10.0</span>
               <Sparkles className="w-3.5 h-3.5 text-blue-500" />
             </div>
             
@@ -1094,17 +1182,13 @@ export default function App() {
                       </>
                     ) : (
                       <>
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white shrink-0 mt-1 shadow-[0_4px_15px_rgba(37,99,235,0.4)] border border-blue-400/30 text-lg">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 mt-1 shadow-[0_4px_15px_rgba(37,99,235,0.4)] border border-blue-400/30 text-lg ${msg.color ? msg.color : 'bg-gradient-to-br from-blue-600 to-blue-800'}`}>
                           {msg.icon || <StarOfDavid className="w-5 h-5" />}
                         </div>
                         <div className="flex-1 space-y-3">
                           <div className={`font-bold text-sm ${isDarkMode ? 'text-slate-300' : 'text-blue-900'}`}>{msg.sageName || 'IsraelGPT'}</div>
                           
-                          {msg.text && (
-                            <div className={`prose prose-p:leading-relaxed max-w-none text-[15px] font-medium markdown-body ${isDarkMode ? 'prose-invert text-slate-300' : 'prose-slate text-blue-900/80'}`} dir="rtl">
-                              <Markdown>{msg.text}</Markdown>
-                            </div>
-                          )}
+                          {msg.text && renderMarkdownContent(msg)}
                           
                           {msg.isImageLoading && (
                             <div className={`flex items-center gap-2 mt-4 p-4 rounded-xl border border-dashed ${isDarkMode ? 'bg-blue-900/20 border-blue-800 text-blue-400' : 'bg-blue-50/50 border-blue-200 text-blue-500'}`}>
@@ -1296,11 +1380,8 @@ export default function App() {
               </div>
               <div className="p-6 overflow-y-auto flex-1 space-y-6">
                 <div className="text-center mb-6">
-                  <div className={`w-20 h-20 mx-auto rounded-3xl flex items-center justify-center shadow-lg mb-4 ${isDarkMode ? 'bg-slate-800 text-blue-400' : 'bg-white text-blue-600'}`}>
-                    <StarOfDavid className="w-10 h-10" />
-                  </div>
-                  <h3 className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-blue-900'}`}>IsraelGPT</h3>
-                  <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>גרסה 0.7.0</p>
+                  <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-28 mx-auto" referrerPolicy="no-referrer" />
+                  <p className={`text-sm font-medium mt-2 ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>גרסה 0.9.1</p>
                 </div>
 
                 <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-blue-50/50 border-blue-100'}`}>

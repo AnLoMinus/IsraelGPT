@@ -1,6 +1,18 @@
 import { abraham } from './abraham';
 import { isaac } from './isaac';
 import { jacob } from './jacob';
+import { reuben } from './reuben';
+import { simeon } from './simeon';
+import { levi } from './levi';
+import { judah } from './judah';
+import { issachar } from './issachar';
+import { zebulun } from './zebulun';
+import { dan } from './dan';
+import { naphtali } from './naphtali';
+import { gad } from './gad';
+import { asher } from './asher';
+import { joseph } from './joseph';
+import { benjamin } from './benjamin';
 import { moses } from './moses';
 import { david } from './david';
 import { solomon } from './solomon';
@@ -9,7 +21,7 @@ import { jeremiah } from './jeremiah';
 import { deborah } from './deborah';
 import { miriam } from './miriam';
 import { esther } from './esther';
-import { judah } from './judah';
+import { judahmaccabee } from './judahmaccabee';
 import { rachel } from './rachel';
 import { rambam } from './rambam';
 import { rashi } from './rashi';
@@ -30,6 +42,18 @@ export const characters: Character[] = [
   abraham,
   isaac,
   jacob,
+  reuben,
+  simeon,
+  levi,
+  judah,
+  issachar,
+  zebulun,
+  dan,
+  naphtali,
+  gad,
+  asher,
+  joseph,
+  benjamin,
   moses,
   david,
   solomon,
@@ -38,7 +62,7 @@ export const characters: Character[] = [
   deborah,
   miriam,
   esther,
-  judah,
+  judahmaccabee,
   rachel,
   rambam,
   rashi,
