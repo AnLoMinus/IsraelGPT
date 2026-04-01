@@ -6,7 +6,7 @@ import {
   Globe, Shield, Zap, Copy, ThumbsUp, ThumbsDown, RefreshCw,
   History, X, BookOpen, Loader2, Moon, Sun, Trash2,
   Volume2, Download, Share2, FileText, Info, FileCheck, ShieldCheck, Scale,
-  Heart, Scroll, Users, LogIn, LogOut
+  Heart, Scroll, Users, LogIn, LogOut, ListTodo, Code, Phone, Mail, Linkedin, Github, Facebook, ExternalLink
 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { GoogleGenAI, Type } from '@google/genai';
@@ -15,6 +15,7 @@ import { HDate, Sedra, Locale } from '@hebcal/core';
 import { characters as defaultCharacters, Character } from './characters';
 import { getBiography } from './biographies';
 import { CharacterCV } from './components/CharacterCV';
+import { TorahLearning } from './components/TorahLearning';
 import { TermsOfUse } from './components/TermsOfUse';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { Settings } from './components/Settings';
@@ -157,7 +158,7 @@ interface ChatSession {
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [message, setMessage] = useState('');
   const [chatStarted, setChatStarted] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -167,6 +168,9 @@ export default function App() {
   
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const [changelogText, setChangelogText] = useState('');
+  const [isTodoOpen, setIsTodoOpen] = useState(false);
+  const [todoText, setTodoText] = useState('');
+  const [isTorahOpen, setIsTorahOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
@@ -219,10 +223,15 @@ export default function App() {
     const savedSessions = localStorage.getItem('israelgpt_sessions');
     if (savedSessions) setSessions(JSON.parse(savedSessions));
 
-    fetch('/changelog.md')
-      .then(res => res.text())
-      .then(text => setChangelogText(text))
+    fetch('/api/changelog')
+      .then(res => res.json())
+      .then(data => setChangelogText(data.content))
       .catch(err => console.error('Failed to load changelog', err));
+
+    fetch('/api/todo')
+      .then(res => res.json())
+      .then(data => setTodoText(data.content))
+      .catch(err => console.error('Failed to load todo', err));
   }, []);
 
   // Save Dark Mode
@@ -277,6 +286,19 @@ export default function App() {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Handle responsive sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Initialize or reset chat
@@ -758,19 +780,37 @@ export default function App() {
       />
 
       {/* Sidebar */}
-      <AnimatePresence initial={false}>
+      <AnimatePresence>
         {isSidebarOpen && (
-          <motion.aside 
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 280, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`h-full backdrop-blur-2xl border-l flex flex-col shadow-[4px_0_30px_rgba(37,99,235,0.05)] z-20 shrink-0 overflow-hidden relative ${isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/70 border-blue-100/50'}`}
-          >
+          <>
+            {/* Backdrop for mobile */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSidebarOpen(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+            />
+            <motion.aside 
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 300, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className={`fixed inset-y-0 right-0 lg:relative h-full backdrop-blur-2xl border-l flex flex-col shadow-[4px_0_30px_rgba(37,99,235,0.05)] z-50 lg:z-20 shrink-0 overflow-hidden ${isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/70 border-blue-100/50'}`}
+              style={{ width: 280 }}
+            >
             <div className="w-[280px] h-full flex flex-col">
               <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center justify-center w-full">
+                <div className="flex items-center justify-center w-full flex-col gap-2">
                   <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-16" referrerPolicy="no-referrer" />
+                  <button 
+                    onClick={() => setIsChangelogOpen(true)}
+                    className={`text-[10px] px-2 py-0.5 rounded-full border transition-all font-bold hover:scale-105 active:scale-95 ${
+                      isDarkMode ? 'bg-blue-600/20 border-blue-500/30 text-blue-400 hover:bg-blue-600/30' : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100'
+                    }`}
+                  >
+                    גרסה 0.12.0
+                  </button>
                 </div>
                 {user ? (
                   <button onClick={handleLogout} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-blue-50 text-blue-500'}`} title="התנתק">
@@ -800,7 +840,17 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="px-4 py-2 space-y-2">
+                <div className="px-4 py-2 space-y-2">
+                <button 
+                  onClick={() => setIsTorahOpen(true)}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition-all font-bold border ${
+                    isDarkMode ? 'bg-slate-800/50 border-slate-700 text-blue-400 hover:bg-slate-800' : 'bg-blue-50 border-blue-100 text-blue-700 hover:bg-blue-100'
+                  }`}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>תורה אורה והוראה</span>
+                </button>
+
                 <button 
                   onClick={startNewChat}
                   className="w-full flex items-center justify-center gap-2 bg-gradient-to-l from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-3 px-4 rounded-xl transition-all shadow-[0_4px_20px_rgba(37,99,235,0.3)] font-medium active:scale-[0.98] border border-blue-400/20"
@@ -1009,14 +1059,15 @@ export default function App() {
               </div>
             </div>
           </motion.aside>
+          </>
         )}
       </AnimatePresence>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full relative min-w-0 z-10">
         {/* Header */}
-        <header className={`h-16 flex items-center justify-between px-4 backdrop-blur-2xl border-b sticky top-0 z-20 ${isDarkMode ? 'bg-slate-900/40 border-slate-800' : 'bg-white/40 border-blue-100/50'}`}>
-          <div className="flex items-center gap-3">
+        <header className={`h-16 flex items-center justify-between px-4 backdrop-blur-2xl border-b sticky top-0 z-30 ${isDarkMode ? 'bg-slate-900/40 border-slate-800' : 'bg-white/40 border-blue-100/50'}`}>
+          <div className="flex items-center gap-2 sm:gap-3">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className={`p-2 rounded-xl transition-all border border-transparent ${isDarkMode ? 'hover:bg-slate-800 hover:border-slate-700 text-slate-300' : 'hover:bg-white/80 hover:shadow-sm hover:border-blue-100 text-blue-600'}`}
@@ -1025,12 +1076,12 @@ export default function App() {
             </button>
             <div 
               onClick={() => setIsChangelogOpen(true)}
-              className={`flex items-center gap-2 px-3 py-1.5 backdrop-blur-md rounded-xl cursor-pointer transition-colors group border ${isDarkMode ? 'bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'bg-white/80 shadow-[0_2px_10px_rgba(37,99,235,0.05)] border-blue-100/80 hover:bg-blue-50'}`}
+              className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 backdrop-blur-md rounded-xl cursor-pointer transition-colors group border ${isDarkMode ? 'bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'bg-white/80 shadow-[0_2px_10px_rgba(37,99,235,0.05)] border-blue-100/80 hover:bg-blue-50'}`}
               title="צפה ביומן אירועים (Changelog)"
             >
-              <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-9 mx-auto" referrerPolicy="no-referrer" />
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.11.0</span>
-              <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+              <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-7 sm:h-9 mx-auto" referrerPolicy="no-referrer" />
+              <span className={`text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.12.0</span>
+              <Sparkles className="hidden sm:block w-3.5 h-3.5 text-blue-500" />
             </div>
             
             {/* Date & Time Info */}
@@ -1116,7 +1167,7 @@ export default function App() {
         </header>
 
         {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 scroll-smooth z-10">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-6 md:p-8 scroll-smooth z-10">
           <div className="max-w-3xl mx-auto h-full flex flex-col" ref={chatContainerRef}>
             
             {!chatStarted ? (
@@ -1182,36 +1233,55 @@ export default function App() {
               </motion.div>
             ) : (
               /* Chat Messages */
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
+                {/* Active Sages Horizontal Scroll on Mobile */}
+                {activeSages.length > 0 && (
+                  <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 lg:hidden sticky top-0 z-10 py-2">
+                    {activeSages.map(sage => (
+                      <div key={sage.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border whitespace-nowrap shadow-sm ${isDarkMode ? 'bg-slate-800/90 border-slate-700 text-slate-200' : 'bg-white/90 border-blue-100 text-blue-900'}`}>
+                        <span className="text-base">{sage.icon}</span>
+                        <span className="text-[10px] font-bold">{sage.name}</span>
+                        <button 
+                          onClick={() => setActiveSages(prev => prev.filter(s => s.id !== sage.id))}
+                          className="p-0.5 hover:bg-red-500/10 rounded-full transition-colors"
+                        >
+                          <X className="w-3 h-3 text-red-500" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {messages.map((msg, idx) => (
                   <motion.div 
                     key={msg.id || idx}
                     id={`message-${msg.id}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`flex gap-4 p-4 rounded-2xl ${isDarkMode ? 'bg-slate-900/40' : 'bg-white/40'}`}
+                    className={`flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl ${isDarkMode ? 'bg-slate-900/40' : 'bg-white/40'}`}
                   >
                     {msg.role === 'user' ? (
                       <>
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white font-medium text-sm shrink-0 mt-1 shadow-md border border-white/20">
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white font-medium text-xs sm:text-sm shrink-0 mt-1 shadow-md border border-white/20">
                           יש
                         </div>
-                        <div className="flex-1 space-y-2">
-                          <div className={`font-bold text-sm ${isDarkMode ? 'text-slate-300' : 'text-blue-900'}`}>אתה</div>
-                          <div className={`font-medium leading-relaxed text-[15px] whitespace-pre-wrap ${isDarkMode ? 'text-slate-200' : 'text-blue-900/80'}`}>
+                        <div className="flex-1 space-y-1 sm:space-y-2">
+                          <div className={`font-bold text-[10px] sm:text-xs uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-blue-400/80'}`}>אתה</div>
+                          <div className={`font-medium leading-relaxed text-sm sm:text-[15px] whitespace-pre-wrap ${isDarkMode ? 'text-slate-200' : 'text-blue-900/80'}`}>
                             {msg.text}
                           </div>
                         </div>
                       </>
                     ) : (
                       <>
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 mt-1 shadow-[0_4px_15px_rgba(37,99,235,0.4)] border border-blue-400/30 text-lg ${msg.color ? msg.color : 'bg-gradient-to-br from-blue-600 to-blue-800'}`}>
-                          {msg.icon || <StarOfDavid className="w-5 h-5" />}
+                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-white shrink-0 mt-1 shadow-[0_4px_15px_rgba(37,99,235,0.4)] border border-blue-400/30 text-base sm:text-lg ${msg.color ? msg.color : 'bg-gradient-to-br from-blue-600 to-blue-800'}`}>
+                          {msg.icon || <StarOfDavid className="w-4 h-4 sm:w-5 sm:h-5" />}
                         </div>
-                        <div className="flex-1 space-y-3">
-                          <div className={`font-bold text-sm ${isDarkMode ? 'text-slate-300' : 'text-blue-900'}`}>{msg.sageName || 'IsraelGPT'}</div>
+                        <div className="flex-1 space-y-2 sm:space-y-3">
+                          <div className={`font-bold text-[10px] sm:text-xs uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-blue-400/80'}`}>{msg.sageName || 'IsraelGPT'}</div>
                           
-                          {msg.text && renderMarkdownContent(msg)}
+                          <div className="text-sm sm:text-base">
+                            {msg.text && renderMarkdownContent(msg)}
+                          </div>
                           
                           {msg.isImageLoading && (
                             <div className={`flex items-center gap-2 mt-4 p-4 rounded-xl border border-dashed ${isDarkMode ? 'bg-blue-900/20 border-blue-800 text-blue-400' : 'bg-blue-50/50 border-blue-200 text-blue-500'}`}>
@@ -1289,14 +1359,14 @@ export default function App() {
         </div>
 
         {/* Input Area */}
-        <div className={`w-full pt-4 pb-6 px-4 sm:px-6 md:px-8 z-20 shrink-0 ${isDarkMode ? 'bg-slate-950' : 'bg-[#f4f7fb]'}`}>
+        <div className={`w-full pt-2 sm:pt-4 pb-4 sm:pb-6 px-2 sm:px-6 md:px-8 z-20 shrink-0 ${isDarkMode ? 'bg-slate-950' : 'bg-[#f4f7fb]'}`}>
           <div className="max-w-3xl mx-auto relative">
-            <div className={`backdrop-blur-2xl border rounded-[1.5rem] overflow-hidden focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all duration-300 ${isDarkMode ? 'bg-slate-900/90 border-slate-700 shadow-[0_8px_40px_rgba(0,0,0,0.3)]' : 'bg-white/90 border-blue-200/80 shadow-[0_8px_40px_rgba(37,99,235,0.12)]'}`}>
+            <div className={`backdrop-blur-2xl border rounded-[1.2rem] sm:rounded-[1.5rem] overflow-hidden focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/20 transition-all duration-300 ${isDarkMode ? 'bg-slate-900/90 border-slate-700 shadow-[0_8px_40px_rgba(0,0,0,0.3)]' : 'bg-white/90 border-blue-200/80 shadow-[0_8px_40px_rgba(37,99,235,0.12)]'}`}>
               <textarea 
                 ref={textareaRef}
                 rows={1}
                 placeholder="שאל את IsraelGPT כל דבר..."
-                className={`w-full max-h-48 min-h-[60px] py-4 px-5 bg-transparent border-none focus:ring-0 resize-none text-[15px] leading-relaxed font-medium ${isDarkMode ? 'text-slate-100 placeholder:text-slate-500' : 'text-blue-900 placeholder:text-blue-400/70'}`}
+                className={`w-full max-h-32 sm:max-h-48 min-h-[50px] sm:min-h-[60px] py-3 sm:py-4 px-4 sm:px-5 bg-transparent border-none focus:ring-0 resize-none text-sm sm:text-[15px] leading-relaxed font-medium ${isDarkMode ? 'text-slate-100 placeholder:text-slate-500' : 'text-blue-900 placeholder:text-blue-400/70'}`}
                 value={message}
                 onChange={handleInput}
                 onKeyDown={handleKeyDown}
@@ -1353,7 +1423,7 @@ export default function App() {
       {/* Changelog Modal */}
       <AnimatePresence>
         {isChangelogOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
@@ -1363,7 +1433,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`relative w-full max-w-2xl backdrop-blur-2xl border rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[80vh] z-10 ${isDarkMode ? 'bg-slate-900/90 border-slate-700' : 'bg-white/90 border-blue-200/80'}`}
+              className={`relative w-full sm:max-w-2xl h-full sm:h-auto sm:max-h-[90vh] backdrop-blur-2xl border rounded-none sm:rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col z-10 ${isDarkMode ? 'bg-slate-900/90 border-slate-700' : 'bg-white/90 border-blue-200/80'}`}
             >
               <div className={`p-6 border-b flex items-center justify-between ${isDarkMode ? 'border-slate-800 bg-slate-900/50' : 'border-blue-100/50 bg-white/50'}`}>
                 <div className="flex items-center gap-3">
@@ -1389,7 +1459,7 @@ export default function App() {
       {/* About Modal */}
       <AnimatePresence>
         {isAboutOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
@@ -1399,7 +1469,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`relative w-full max-w-lg backdrop-blur-2xl border rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[90vh] z-10 ${isDarkMode ? 'bg-slate-900/90 border-slate-700' : 'bg-white/90 border-blue-200/80'}`}
+              className={`relative w-full sm:max-w-lg h-full sm:h-auto sm:max-h-[90vh] backdrop-blur-2xl border rounded-none sm:rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col z-10 ${isDarkMode ? 'bg-slate-900/90 border-slate-700' : 'bg-white/90 border-blue-200/80'}`}
             >
               <div className={`p-6 border-b flex items-center justify-between ${isDarkMode ? 'border-slate-800 bg-slate-900/50' : 'border-blue-100/50 bg-white/50'}`}>
                 <div className="flex items-center gap-3">
@@ -1415,7 +1485,55 @@ export default function App() {
               <div className="p-6 overflow-y-auto flex-1 space-y-6">
                 <div className="text-center mb-6">
                   <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-28 mx-auto" referrerPolicy="no-referrer" />
-                  <p className={`text-sm font-medium mt-2 ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>גרסה 0.9.1</p>
+                  <p className={`text-sm font-medium mt-2 ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>גרסה 0.12.0</p>
+                </div>
+
+                <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-blue-50/50 border-blue-100'}`}>
+                  <h4 className={`text-sm font-bold mb-2 flex items-center gap-2 ${isDarkMode ? 'text-slate-200' : 'text-blue-800'}`}>
+                    <User className="w-4 h-4" />
+                    פרטי מפתח
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-sm">
+                        <Code className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-blue-900'}`}>לאון יעקובוב (AnLoMinus)</p>
+                        <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-slate-500'}`}>Full Stack Developer & AI Enthusiast</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <a href="tel:054-328-5967" className={`flex items-center gap-2 p-2 rounded-lg text-xs transition-colors ${isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}>
+                        <Phone className="w-3.5 h-3.5 text-green-500" />
+                        054-328-5967
+                      </a>
+                      <a href="https://wa.me/972543285967" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 p-2 rounded-lg text-xs transition-colors ${isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}>
+                        <MessageSquare className="w-3.5 h-3.5 text-green-500" />
+                        WhatsApp
+                      </a>
+                      <a href="mailto:GlobalElite8200@gmail.com" className={`flex items-center gap-2 p-2 rounded-lg text-xs transition-colors ${isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}>
+                        <Mail className="w-3.5 h-3.5 text-red-400" />
+                        Email
+                      </a>
+                      <a href="https://github.com/AnLoMinus?tab=repositories" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 p-2 rounded-lg text-xs transition-colors ${isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}>
+                        <Github className="w-3.5 h-3.5" />
+                        GitHub Repos
+                      </a>
+                      <a href="https://codepen.io/Anlominus" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 p-2 rounded-lg text-xs transition-colors ${isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}>
+                        <Code className="w-3.5 h-3.5 text-yellow-500" />
+                        CodePen
+                      </a>
+                      <a href="https://www.linkedin.com/in/anlominus/" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 p-2 rounded-lg text-xs transition-colors ${isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}>
+                        <Linkedin className="w-3.5 h-3.5 text-blue-500" />
+                        LinkedIn
+                      </a>
+                      <a href="https://www.facebook.com/AnlominusX" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 p-2 rounded-lg text-xs transition-colors ${isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}>
+                        <Facebook className="w-3.5 h-3.5 text-blue-600" />
+                        Facebook
+                      </a>
+                    </div>
+                  </div>
                 </div>
 
                 <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-blue-50/50 border-blue-100'}`}>
@@ -1521,6 +1639,94 @@ export default function App() {
         isDarkMode={isDarkMode} 
         user={user}
       />
+
+      {/* Torah Learning Modal */}
+      <TorahLearning 
+        isOpen={isTorahOpen}
+        onClose={() => setIsTorahOpen(false)}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* Changelog Modal */}
+      <AnimatePresence>
+        {isChangelogOpen && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              onClick={() => setIsChangelogOpen(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className={`relative w-full max-w-2xl backdrop-blur-2xl border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] z-10 ${isDarkMode ? 'bg-slate-900/90 border-slate-700' : 'bg-white/90 border-blue-200/80'}`}
+            >
+              <div className={`p-6 border-b flex items-center justify-between ${isDarkMode ? 'border-slate-800 bg-slate-900/50' : 'border-blue-100/50 bg-white/50'}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-slate-800 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
+                    <History className="w-5 h-5" />
+                  </div>
+                  <h2 className={`text-xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-blue-900'}`}>יומן אירועים ועדכונים</h2>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setIsTodoOpen(true)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDarkMode ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}
+                  >
+                    <ListTodo className="w-4 h-4" />
+                    רשימת TODO
+                  </button>
+                  <button onClick={() => setIsChangelogOpen(false)} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'}`}>
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              <div className="p-8 overflow-y-auto flex-1">
+                <div className="markdown-body prose prose-blue dark:prose-invert max-w-none">
+                  <Markdown>{changelogText}</Markdown>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* TODO Modal */}
+      <AnimatePresence>
+        {isTodoOpen && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-0 sm:p-6">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              onClick={() => setIsTodoOpen(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className={`relative w-full sm:max-w-2xl h-full sm:h-auto sm:max-h-[85vh] backdrop-blur-2xl border rounded-none sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col z-10 ${isDarkMode ? 'bg-slate-900/90 border-slate-700' : 'bg-white/90 border-blue-200/80'}`}
+            >
+              <div className={`p-6 border-b flex items-center justify-between ${isDarkMode ? 'border-slate-800 bg-slate-900/50' : 'border-blue-100/50 bg-white/50'}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-slate-800 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
+                    <ListTodo className="w-5 h-5" />
+                  </div>
+                  <h2 className={`text-xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-blue-900'}`}>רשימת משימות ושדרוגים (TODO)</h2>
+                </div>
+                <button onClick={() => setIsTodoOpen(false)} className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'}`}>
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-8 overflow-y-auto flex-1">
+                <div className="markdown-body prose prose-blue dark:prose-invert max-w-none">
+                  <Markdown>{todoText}</Markdown>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Add Character Modal */}
       <AnimatePresence>

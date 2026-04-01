@@ -1,6 +1,8 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
+import fs from "fs/promises";
+import path from "path";
 
 async function startServer() {
   const app = express();
@@ -101,6 +103,54 @@ async function startServer() {
     } catch (error) {
       console.error("Image generation error:", error);
       res.status(500).json({ error: 'Failed to generate image' });
+    }
+  });
+
+  // API route to list Torah files
+  app.get("/api/torah/list", async (req, res) => {
+    try {
+      const torahDir = path.join(process.cwd(), "src", "תורה אורה והוראה");
+      const files = await fs.readdir(torahDir);
+      const mdFiles = files.filter(f => f.endsWith(".md"));
+      res.json({ files: mdFiles });
+    } catch (error) {
+      console.error("Error listing Torah files:", error);
+      res.status(500).json({ error: "Failed to list Torah files" });
+    }
+  });
+
+  // API route to read a specific Torah file
+  app.get("/api/torah/read/:filename", async (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const filePath = path.join(process.cwd(), "src", "תורה אורה והוראה", filename);
+      const content = await fs.readFile(filePath, "utf-8");
+      res.json({ content });
+    } catch (error) {
+      console.error("Error reading Torah file:", error);
+      res.status(500).json({ error: "Failed to read Torah file" });
+    }
+  });
+
+  // API route to read changelog
+  app.get("/api/changelog", async (req, res) => {
+    try {
+      const filePath = path.join(process.cwd(), "changelog.md");
+      const content = await fs.readFile(filePath, "utf-8");
+      res.json({ content });
+    } catch (error) {
+      res.status(404).json({ error: "Changelog not found" });
+    }
+  });
+
+  // API route to read todo
+  app.get("/api/todo", async (req, res) => {
+    try {
+      const filePath = path.join(process.cwd(), "todo.md");
+      const content = await fs.readFile(filePath, "utf-8");
+      res.json({ content });
+    } catch (error) {
+      res.status(404).json({ error: "TODO not found" });
     }
   });
 
