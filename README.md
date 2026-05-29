@@ -1,4 +1,11 @@
-# IsraelGPT - צ'אט בינה מלאכותית עם חכמי ישראל
+# IsraelGPT - 
+צ'אט בינה מלאכותית עם חכמי ישראל
+
+| | |
+| :---: | :---: |
+| <img width="1440" height="861" alt="image" src="https://github.com/user-attachments/assets/410833d6-4220-465c-9f18-70d137d8745e" /> | <img width="1440" height="862" alt="image" src="https://github.com/user-attachments/assets/804546a4-0079-40e9-be2a-2507d6e743a2" />
+
+
 
 🔗 **[קישור לאפליקציה](https://ai.studio/apps/374b8f24-ed31-494b-8785-9de86ebc82bb?fullscreenApplet=true)**
 
@@ -192,6 +199,10 @@ IsraelGPT הוא פרויקט חדשני המשלב את היכולות המתק
 
 ---
 
+<img width="346" height="750" alt="image" src="https://github.com/user-attachments/assets/6ff956e6-2748-4256-bad8-65ff22fd65f9" />
+
 <p align="center">
   תודה על השימוש ב-IsraelGPT!
 </p>
+
+
