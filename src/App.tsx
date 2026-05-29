@@ -802,14 +802,14 @@ export default function App() {
             <div className="w-[280px] h-full flex flex-col">
               <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center justify-center w-full flex-col gap-2">
-                  <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-16" referrerPolicy="no-referrer" />
+                  <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-24 md:h-28 object-contain" referrerPolicy="no-referrer" />
                   <button 
                     onClick={() => setIsChangelogOpen(true)}
                     className={`text-[10px] px-2 py-0.5 rounded-full border transition-all font-bold hover:scale-105 active:scale-95 ${
                       isDarkMode ? 'bg-blue-600/20 border-blue-500/30 text-blue-400 hover:bg-blue-600/30' : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100'
                     }`}
                   >
-                    גרסה 0.12.0
+                    גרסה 0.13.0
                   </button>
                 </div>
                 {user ? (
@@ -1079,8 +1079,8 @@ export default function App() {
               className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 backdrop-blur-md rounded-xl cursor-pointer transition-colors group border ${isDarkMode ? 'bg-slate-800/80 border-slate-700 hover:bg-slate-700' : 'bg-white/80 shadow-[0_2px_10px_rgba(37,99,235,0.05)] border-blue-100/80 hover:bg-blue-50'}`}
               title="צפה ביומן אירועים (Changelog)"
             >
-              <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-7 sm:h-9 mx-auto" referrerPolicy="no-referrer" />
-              <span className={`text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.12.0</span>
+              <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-10 sm:h-12 object-contain mx-auto" referrerPolicy="no-referrer" />
+              <span className={`text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-md ${isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>v0.13.0</span>
               <Sparkles className="hidden sm:block w-3.5 h-3.5 text-blue-500" />
             </div>
             
@@ -1485,7 +1485,7 @@ export default function App() {
               <div className="p-6 overflow-y-auto flex-1 space-y-6">
                 <div className="text-center mb-6">
                   <img src="/IsraelGPT-LOGO.png" alt="IsraelGPT" className="h-28 mx-auto" referrerPolicy="no-referrer" />
-                  <p className={`text-sm font-medium mt-2 ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>גרסה 0.12.0</p>
+                  <p className={`text-sm font-medium mt-2 ${isDarkMode ? 'text-slate-400' : 'text-blue-600/70'}`}>גרסה 0.13.0</p>
                 </div>
 
                 <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-blue-50/50 border-blue-100'}`}>
