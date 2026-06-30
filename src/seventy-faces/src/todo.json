@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1",
+    "title": "Implement Google Authentication",
+    "completed": true,
+    "version": "2.0.0"
+  },
+  {
+    "id": "2",
+    "title": "Add Gemini Token Counter to Header",
+    "completed": true,
+    "version": "2.0.0"
+  },
+  {
+    "id": "3",
+    "title": "Save/Load History to Firebase",
+    "completed": true,
+    "version": "2.0.0"
+  },
+  {
+    "id": "4",
+    "title": "Admin Dashboard for User Management",
+    "completed": true,
+    "version": "2.0.0"
+  },
+  {
+    "id": "5",
+    "title": "Shared Table (Remote Collaboration)",
+    "completed": true,
+    "version": "2.0.0"
+  },
+  {
+    "id": "6",
+    "title": "TODO System Integration",
+    "completed": true,
+    "version": "2.0.0"
+  },
+  {
+    "id": "7",
+    "title": "Update About Modal with Credits and WhatsApp",
+    "completed": true,
+    "version": "2.0.0"
+  },
+  {
+    "id": "8",
+    "title": "Export to PDF",
+    "completed": false,
+    "version": "2.1.0"
+  },
+  {
+    "id": "9",
+    "title": "Voice Input for Queries",
+    "completed": false,
+    "version": "2.1.0"
+  }
+]

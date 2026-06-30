@@ -22,6 +22,7 @@ import { Settings } from './components/Settings';
 import { ParashatHashavua } from './components/ParashatHashavua';
 import { DafYomi } from './components/DafYomi';
 import { Siddur } from './components/Siddur/Siddur';
+import SeventyFacesApp from './seventy-faces/src/App';
 import { auth, db } from './firebase';
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, doc, getDoc, setDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
@@ -179,6 +180,7 @@ export default function App() {
   const [isParashaOpen, setIsParashaOpen] = useState(false);
   const [isDafYomiOpen, setIsDafYomiOpen] = useState(false);
   const [isSiddurOpen, setIsSiddurOpen] = useState(false);
+  const [isSeventyFacesOpen, setIsSeventyFacesOpen] = useState(false);
   
   const [customCharacters, setCustomCharacters] = useState<Character[]>([]);
   const [isAddCharOpen, setIsAddCharOpen] = useState(false);
@@ -849,6 +851,16 @@ export default function App() {
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>תורה אורה והוראה</span>
+                </button>
+
+                <button 
+                  onClick={() => setIsSeventyFacesOpen(true)}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition-all font-bold border ${
+                    isDarkMode ? 'bg-indigo-900/30 border-indigo-700/50 text-indigo-400 hover:bg-indigo-900/50' : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>שבעים פנים לתורה</span>
                 </button>
 
                 <button 
@@ -1646,6 +1658,22 @@ export default function App() {
         onClose={() => setIsTorahOpen(false)}
         isDarkMode={isDarkMode}
       />
+
+      {/* Seventy Faces Project Modal placeholder */}
+      <AnimatePresence>
+        {isSeventyFacesOpen && (
+          <div className="fixed inset-0 z-[120] bg-slate-900 w-full h-full overflow-hidden">
+            <SeventyFacesApp />
+            <button 
+              onClick={() => setIsSeventyFacesOpen(false)} 
+              className="absolute top-4 left-4 z-[130] p-3 rounded-full bg-slate-800/80 text-white hover:bg-slate-700 transition-colors shadow-lg"
+              title="חזור למערכת הראשית"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Changelog Modal */}
       <AnimatePresence>

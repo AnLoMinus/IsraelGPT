@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "totalTokensUsed": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastLogin": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role", "totalTokensUsed", "createdAt"]
+    },
+    "History": {
+      "title": "History",
+      "description": "A saved analysis session",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "query": { "type": "string" },
+        "analysisData": { "type": "string" },
+        "cardsData": { "type": "string" },
+        "tokensUsed": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "query", "createdAt"]
+    },
+    "Room": {
+      "title": "Room",
+      "description": "A shared table for remote collaboration",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "currentQuery": { "type": "string" },
+        "currentAnalysis": { "type": "string" }
+      },
+      "required": ["name", "createdBy", "createdAt"]
+    },
+    "Todo": {
+      "title": "Todo",
+      "description": "A feature request or planned upgrade",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "completed": { "type": "boolean" },
+        "version": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "completed", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles and token usage"
+    },
+    "histories/{historyId}": {
+      "schema": { "$ref": "#/entities/History" },
+      "description": "Stores saved analysis sessions"
+    },
+    "rooms/{roomId}": {
+      "schema": { "$ref": "#/entities/Room" },
+      "description": "Stores active shared tables"
+    },
+    "todos/{todoId}": {
+      "schema": { "$ref": "#/entities/Todo" },
+      "description": "Stores planned upgrades and features"
+    }
+  }
+}
