@@ -11,6 +11,13 @@ body {
   font-family: 'Rubik', sans-serif;
   background-color: #f4f7fb;
   direction: rtl;
+  /* מניעת בחירת טקסט בטעות בנייד */
+  -webkit-tap-highlight-color: transparent;
+  /* התאמות מקצועיות למובייל - חריצים ואזורים בטוחים */
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
 }
 
 .dark body {
