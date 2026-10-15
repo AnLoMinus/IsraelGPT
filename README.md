@@ -1,6 +1,7 @@
 # IsraelGPT - צ'אט בינה מלאכותית עם חכמי ישראל
 
-🔗 **[קישור לאפליקציה](https://ai.studio/apps/374b8f24-ed31-494b-8785-9de86ebc82bb?fullscreenApplet=true)**
+🔗 **[קישור לאפליקציה](https://ai.studio/apps/374b8f24-ed31-494b-8785-9de86ebc82bb?fullscreenApplet=true)** 
+[...](https://drive.google.com/file/d/15lW3KbVdx4bMcJ5SAuawge7i1IZLtwR8/view?usp=sharing)
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/fe49b5bb-019c-4197-b6fb-0c27c5bb0b7d" alt="logo" width="400" />
